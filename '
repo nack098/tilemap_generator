@@ -4,7 +4,6 @@ import numpy as np
 from datetime import datetime
 from os import getcwd
 from sys import argv as args
-from sys import stdout
 from pathlib import Path
 
 
@@ -12,9 +11,9 @@ def log(message: str, endline: bool = False):
     now: datetime = datetime.now()
     now_str: str = now.strftime("%Y-%m-%d %H:%M:%S")
     if not endline:
-        print(f"{now_str} [\u001b[32mtilemap-generator\u001b[0m] {message}")
+        print(f"{now_str} [\u001b[32mapplication\u001b[0m] {message}")
         return
-    print(f"{now_str} [\u001b[32mtilemap-generator\u001b[0m] {message}", end="\r")
+    print(f"{now_str} [\u001b[32mapplication\u001b[0m] {message}", end="\r")
 
 
 def crop(image: np.ndarray, tile_size: tuple) -> np.ndarray:
@@ -26,10 +25,10 @@ def crop(image: np.ndarray, tile_size: tuple) -> np.ndarray:
 
 
 def generate(outDir: Path, tiles: np.ndarray):
-    tile_map = np.zeros(tiles.shape[0], dtype=">H")
+    tile_map = np.zeros(tiles.shape[0])
     tile_index = 0
     for i, tile in enumerate(tiles[:-1]):
-        log(f"Finding Unique - {i+1}/{tiles.shape[0]}", True)
+        log(f"Finding Unique {i+1}/{tiles.shape[0]}", True)
         found = False
         if tile_map[i] != tile_index:
             continue
@@ -42,16 +41,6 @@ def generate(outDir: Path, tiles: np.ndarray):
             tile_index += 1
     log(f"Finding Unique {tiles.shape[0]}/{tiles.shape[0]}")
     log(f"Total Unique {tile_index+1}")
-    for i in range(tile_index + 1):
-        log(f"Saving Tile - {i+1}/{tile_index+1}", True)
-        mimg.imsave(
-            outDir.joinpath("tiles").joinpath(f"{i}.bmp"),
-            tiles[np.argmax(tile_map == i)],
-        )
-    log(f"Saving Tile - {tile_index+1}/{tile_index+1}")
-    log("Generating level.dat")
-    with open(outDir.joinpath("level.dat"), "wb") as file:
-        file.write(tile_map.tobytes())
 
 
 def start(path: Path):
@@ -60,7 +49,6 @@ def start(path: Path):
     tiles = crop(image, (16, 16))
     out = Path(getcwd()).joinpath("out")
     out.mkdir(parents=True, exist_ok=True)
-    out.joinpath("tiles").mkdir(parents=True, exist_ok=True)
     generate(out, tiles)
     log("Done")
 
