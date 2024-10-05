@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "tilemap-generator"
+version = "0.1.0"
+description = ""
+authors = ["nack098 <nack098gamer@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pyqt6 = "^6.7.1"
+matplotlib = "^3.9.2"
+
+[tool.poetry.scripts]
+tilemap-generator = "tilemap_generator.cli:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
